@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Control de Monotributo – Córdoba</title>
+<style>
+:root{--bg:#f3f5f9;--card:#fff;--tx:#18202e;--mu:#667086;--bd:#e0e5ee;--pr:#1f4fd1;--prt:#fff;--ok:#1b7f47;--okb:#e1f3e8;--wa:#8a5a00;--wab:#fff1cf;--or:#b9400b;--orb:#ffe3d2;--bad:#ae2417;--badb:#fde2df;--inf:#1b4a8a;--infb:#dfeafa;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1420;--card:#182030;--tx:#e8ecf4;--mu:#97a1b6;--bd:#2a3448;--pr:#7ba2ff;--prt:#0b1220;--ok:#66d393;--okb:#173222;--wa:#f2c35c;--wab:#3a2f12;--or:#ff9d66;--orb:#3b2314;--bad:#ff8a7e;--badb:#3d1c19;--inf:#8bb9f7;--infb:#162c47;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0f1420;--card:#182030;--tx:#e8ecf4;--mu:#97a1b6;--bd:#2a3448;--pr:#7ba2ff;--prt:#0b1220;--ok:#66d393;--okb:#173222;--wa:#f2c35c;--wab:#3a2f12;--or:#ff9d66;--orb:#3b2314;--bad:#ff8a7e;--badb:#3d1c19;--inf:#8bb9f7;--infb:#162c47;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+.wrap{max-width:1000px;margin:0 auto;padding:12px 14px 48px}
+h1{font-size:21px;margin:6px 0 0}h2{font-size:17px;margin:22px 0 10px}
+.mu{color:var(--mu);font-size:13px}
+nav{display:flex;gap:6px;overflow-x:auto;padding:10px 0 4px}
+nav button,.chip{white-space:nowrap;border:1px solid var(--bd);background:var(--card);color:var(--tx);padding:9px 14px;border-radius:999px;font:inherit;cursor:pointer}
+nav button.on,.chip.on{background:var(--pr);color:var(--prt);border-color:var(--pr);font-weight:600}
+.grid{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(160px,1fr))}
+.cards{display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(280px,1fr))}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:14px}
+.kpi b{display:block;font-size:24px;margin-top:2px}
+.row{display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap}
+.bar{height:11px;background:var(--bd);border-radius:9px;overflow:hidden;margin:10px 0 7px}
+.bar i{display:block;height:100%;border-radius:9px}
+.bar i.ok{background:var(--ok)}.bar i.wa{background:#e0a100}.bar i.or{background:var(--or)}.bar i.bad{background:var(--bad)}.bar i.inf{background:var(--pr)}
+.b{font-size:12px;font-weight:600;padding:3px 10px;border-radius:999px;white-space:nowrap}
+.b.ok{background:var(--okb);color:var(--ok)}.b.wa{background:var(--wab);color:var(--wa)}.b.or{background:var(--orb);color:var(--or)}.b.bad{background:var(--badb);color:var(--bad)}.b.inf{background:var(--infb);color:var(--inf)}
+.btn{border:0;background:var(--pr);color:var(--prt);padding:10px 16px;border-radius:10px;font:inherit;font-weight:600;cursor:pointer}
+.btn.sec{background:transparent;color:var(--pr);border:1px solid var(--pr)}.btn.sm{padding:6px 11px;font-size:13px}.btn.del{background:var(--badb);color:var(--bad)}
+.tools{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 12px}
+.tw{overflow-x:auto;background:var(--card);border:1px solid var(--bd);border-radius:14px}
+table{border-collapse:collapse;width:100%;min-width:560px}
+th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--bd);vertical-align:middle}
+th{font-size:12.5px;color:var(--mu);font-weight:600}tr:last-child td{border-bottom:0}
+tbody tr.cl{cursor:pointer}tbody tr.cl:hover{background:var(--bg)}
+.al{display:flex;gap:10px;align-items:center;justify-content:space-between;padding:11px 14px;border-bottom:1px solid var(--bd);cursor:pointer}
+.al:last-child{border-bottom:0}
+.chips{display:flex;gap:6px;overflow-x:auto;padding:4px 0 10px}
+.chip{position:relative;min-width:46px;text-align:center}
+.chip small{display:block;font-size:11px;font-weight:400;opacity:.8}
+.ov{position:fixed;inset:0;background:rgba(10,15,25,.55);display:flex;align-items:center;justify-content:center;padding:14px;z-index:9}
+.md{background:var(--card);border-radius:16px;padding:18px;width:100%;max-width:440px;max-height:92vh;overflow:auto}
+label{display:block;font-size:13px;color:var(--mu);margin-top:11px}
+label.chk{display:flex;gap:8px;align-items:center;color:var(--tx);font-size:14px}
+input,select,textarea{width:100%;margin-top:4px;padding:10px;border:1px solid var(--bd);border-radius:9px;background:var(--bg);color:var(--tx);font:inherit}
+input[type=checkbox]{width:auto;margin:0}
+td input{margin:0;min-width:110px}
+.md.wide{max-width:600px}.pv{max-height:300px;overflow:auto;border:1px solid var(--bd);border-radius:10px;margin:10px 0;background:#fff}.pv canvas{width:100%;display:block}summary{cursor:pointer}
+.empty{text-align:center;padding:34px 16px}
+.empty .btn{margin:4px}
+#msg{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(18px + env(safe-area-inset-bottom,0px));background:var(--tx);color:var(--bg);padding:10px 16px;border-radius:10px;z-index:20;display:none}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--pr);outline-offset:2px}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+</head><body>
+<div class="wrap">
+<h1>Control de Monotributo</h1>
+<div class="mu">Córdoba · Escalas de agosto 2026 a enero 2027 · Hoy: <span id="hoy"></span> · <span id="sync"></span></div>
+<nav id="nav"></nav>
+<main id="app"></main>
+<p class="mu" style="margin-top:28px">Tus datos se guardan en este dispositivo y, si abrís la app desde tu cuenta de Claude, también en tu nube privada para verlos desde cualquier lugar. Hacé una copia de seguridad desde Ajustes.</p>
+</div>
+<input type="file" id="fi" accept="application/pdf,.pdf" multiple hidden onchange="onFiles(this.files)">
+<div id="msg"></div><div id="modal"></div>
+<script>
+const KEY='monotributo_cba_v1',CATS='ABCDEFGHIJK'.split('');
+const DEF={A:[12009410.45,49527.18,49527.18],B:[17595182.74,56379.08,56379.08],C:[24670494,66020,64539],D:[30628651,84614,82564],E:[36028231,119811,108267],F:[45151659,150784,129930],G:[53995798,230612,158815],H:[81924660,522706,317895],I:[91699761,null,474994],J:[105012519,null,580793],K:[126610830,null,702103]};
+const IIBB={A:12560,B:21900,C:29290,D:43820,E:59340,F:75350,G:91150,H:143170,I:171960,J:202500,K:230270};
+const pad=n=>String(n).padStart(2,'0'),iso=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const NOW=new Date(),TODAY=iso(NOW),THISM=TODAY.slice(0,7),CUT=iso(new Date(NOW.getFullYear()-1,NOW.getMonth(),NOW.getDate()));
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const M=n=>(n===''||n==null||isNaN(n))?'—':new Intl.NumberFormat('es-AR',{style:'currency',currency:'ARS',maximumFractionDigits:0}).format(n);
+const D=s=>s?s.split('-').reverse().join('/'):'—';
+const MP=p=>p?['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'][+p.slice(5,7)-1]+' '+p.slice(0,4):'—';
+const addM=(s,n)=>{const[y,m,d]=s.split('-').map(Number);return iso(new Date(y,m-1+n,d))};
+let S=load(),V='home',CAT=null;
+function load(){let s={};try{s=JSON.parse(localStorage.getItem(KEY))||{}}catch(e){}
+ return{iibb:s.iibb||{...IIBB},docs:s.docs||[],scale:s.scale||JSON.parse(JSON.stringify(DEF)),clients:s.clients||[],invoices:s.invoices||[],pagos:s.pagos||[],rentas:s.rentas||[],planes:s.planes||[],seq:s.seq||1}}
+const PARTS=['clients','invoices','pagos','rentas','planes'];let DB=null,PT,LAST={};
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}if(DB){clearTimeout(PT);PT=setTimeout(()=>push(),700)}}
+const uid=()=>S.seq++;
+function msg(t){const m=document.getElementById('msg');m.textContent=t;m.style.display='block';clearTimeout(msg.t);msg.t=setTimeout(()=>m.style.display='none',2600)}
+/* ---------- cálculos ---------- */
+const cl=id=>S.clients.find(c=>c.id==id),cname=id=>cl(id)?cl(id).name:'(cliente borrado)';
+const fact=id=>S.invoices.filter(i=>i.cid==id&&i.date>CUT&&i.date<=TODAY).reduce((a,i)=>a+(+i.amount||0),0);
+const tope=c=>(S.scale[c.cat]||[0])[0]||0;
+const quota=c=>{const s=c&&S.scale[c.cat];return s?(c.act==='Bienes'?s[2]:s[1]):null};
+function st(c){const t=tope(c),f=fact(c.id),p=t?f/t:0;return{f,t,p,left:t-f,k:p>1?['bad','Se pasó del tope']:p>=.9?['or','Crítico']:p>=.8?['wa','Atención']:['ok','Dentro del tope']}}
+const parts=p=>{const c=cl(p.cid);if(!c)return[0,0,0];const ex=/^(Exento|Convenio)/.test(c.reg||'');return[quota(c)||0,ex?0:(S.iibb[c.cat]||0),+c.muni||0]};
+const pamt=p=>(p.amount!==''&&p.amount!=null)?+p.amount:parts(p).reduce((a,x)=>a+x,0);
+const pstat=(due,paid,plan)=>paid?['ok','Pagado']:plan?['inf','En plan']:(due&&due<TODAY)?['bad','Vencido']:['wa','Pendiente'];
+const pdue=p=>p.period+'-20';
+function plst(p){if(+p.pagas>=+p.cuotas)return{k:['ok','Cancelado'],next:null,saldo:0};
+ const next=p.first?addM(p.first,+p.pagas||0):null;
+ return{k:next&&next<TODAY?['bad','Cuota vencida']:['ok','Al día'],next,saldo:Math.max(0,(p.cuotas-(p.pagas||0))*p.cuotaAmt)}}
+const b=k=>`<span class="b ${k[0]}">${k[1]}</span>`;
+/* ---------- vistas ---------- */
+const TABS=[['home','Inicio'],['cats','Categorías'],['clients','Clientes'],['pagos','Pagos mensuales'],['planes','Planes de pago'],['folder','Carpeta de facturas'],['docs','Informes guardados'],['cfg','Ajustes']];
+const go=v=>{V=v;render();scrollTo(0,0)};
+function render(){document.getElementById('hoy').textContent=D(TODAY);
+ document.getElementById('nav').innerHTML=TABS.map(([k,l])=>`<button class="${V==k?'on':''}" onclick="go('${k}')">${l}</button>`).join('');
+ document.getElementById('app').innerHTML=VIEWS[V]()}
+function empty(){return`<div class="card empty"><h2 style="margin-top:0">Empecemos cargando tu primer cliente</h2><p class="mu">1. Cargá tus clientes con su categoría.<br>2. Anotá cada factura que emitan.<br>3. La app te avisa cuánto les queda hasta el tope y qué pagos están vencidos.</p><button class="btn" onclick="edit('clients')">Agregar cliente</button><button class="btn sec" onclick="demo()">Ver con datos de ejemplo</button></div>`}
+function kpi(l,v,sub=''){return`<div class="card kpi"><span class="mu">${l}</span><b>${v}</b><span class="mu">${sub}</span></div>`}
+function ccard(c){const s=st(c);return`<div class="card"><div class="row"><b>${esc(c.name)}</b>${b(s.k)}</div><div class="mu">Categoría ${c.cat} · ${c.act}</div><div class="bar"><i class="${s.k[0]}" style="width:${Math.min(100,s.p*100)}%"></i></div><div class="row mu"><span>Usó el <b>${Math.round(s.p*100)}%</b> (${M(s.f)})</span><span>${s.left>=0?'Le quedan '+M(s.left):'Se pasó por '+M(-s.left)}</span></div><div class="tools" style="margin:10px 0 0"><button class="btn sm" onclick="up(${c.id})">Subir factura PDF</button><button class="btn sec sm" onclick="edit('invoices',0,{cid:${c.id}})">+ Manual</button><button class="btn sec sm" onclick="exp([${c.id}],'pdf')">Informe PDF</button><button class="btn sec sm" onclick="exp([${c.id}],'docx')">Informe Word</button></div></div>`}
+function home(){if(!S.clients.length)return empty();
+ const rows=S.clients.map(c=>({c,s:st(c)})).sort((a,b)=>b.s.p-a.s.p);
+ const pv=S.pagos.filter(p=>pstat(pdue(p),p.paid,p.plan)[1]=='Vencido'),rv=S.rentas.filter(p=>pstat(p.due,p.paid,p.plan)[1]=='Vencido');
+ const debt=pv.reduce((a,p)=>a+pamt(p),0)+rv.reduce((a,p)=>a+(+p.amount||0),0);
+ const sal=S.planes.reduce((a,p)=>a+plst(p).saldo,0),risk=rows.filter(r=>r.s.p>=.8).length;
+ const al=[];rows.filter(r=>r.s.p>=.8).forEach(r=>al.push([`${esc(r.c.name)} usó el ${Math.round(r.s.p*100)}% de su tope (cat. ${r.c.cat})`,b(r.s.k),'cats',r.c.cat]));
+ pv.forEach(p=>al.push([`${esc(cname(p.cid))}: Monotributo de ${MP(p.period)} vencido (${M(pamt(p))})`,b(['bad','Vencido']),'pagos']));
+ rv.forEach(p=>al.push([`${esc(cname(p.cid))}: Rentas ${MP(p.period)} vencido (${M(p.amount)})`,b(['bad','Vencido']),'rentas']));
+ S.planes.filter(p=>plst(p).k[1]=='Cuota vencida').forEach(p=>al.push([`${esc(cname(p.cid))}: cuota vencida del plan ${esc(p.org)} (${D(plst(p).next)})`,b(['bad','Vencida']),'planes']));
+ return`<div class="grid" style="margin-top:8px">${kpi('Clientes',S.clients.length)}${kpi('Cerca o sobre el tope',risk,'80% o más')}${kpi('Deuda vencida',M(debt),'Monotributo + Rentas')}${kpi('Saldo en planes',M(sal),'cuotas por pagar')}</div>
+ <h2>Para atender ahora</h2><div class="card" style="padding:0">${al.length?al.map(a=>`<div class="al" onclick="${a[3]?`CAT='${a[3]}';`:''}go('${a[2]}')"><span>${a[0]}</span>${a[1]}</div>`).join(''):'<div class="empty">Todo al día. No hay nada urgente.</div>'}</div>
+ <div class="row"><h2>Clientes y su tope (últimos 12 meses)</h2><span class="tools"><button class="btn sec sm" onclick="exp(S.clients.map(c=>c.id),'pdf')">Informe general PDF</button><button class="btn sec sm" onclick="exp(S.clients.map(c=>c.id),'docx')">Informe general Word</button></span></div><div class="cards">${rows.map(r=>ccard(r.c)).join('')}</div>`}
+function cats(){const used=CATS.filter(c=>S.clients.some(x=>x.cat==c));if(!CAT)CAT=used[0]||'A';
+ const list=S.clients.filter(c=>c.cat==CAT),sc=S.scale[CAT];
+ const chips=CATS.map(c=>{const n=S.clients.filter(x=>x.cat==c).length;return`<button class="chip ${c==CAT?'on':''}" onclick="CAT='${c}';render()">${c}<small>${n} cliente${n==1?'':'s'}</small></button>`}).join('');
+ const ids=list.map(c=>c.id),inv=S.invoices.filter(i=>ids.includes(+i.cid)).sort((a,b)=>b.date.localeCompare(a.date));
+ return`<div class="chips">${chips}</div><div class="card"><div class="row"><b style="font-size:17px">Categoría ${CAT}</b><span class="mu">Tope anual: <b>${M(sc[0])}</b> · Rentas (IIBB) fijo: <b>${M(S.iibb[CAT])}</b> · Cuota: ${sc[1]===null?'':'servicios '+M(sc[1])+' · '}bienes ${M(sc[2])}</span></div>${sc[1]===null?'<div class="mu" style="margin-top:6px">Esta categoría es solo para venta de cosas muebles.</div>':''}</div>
+ <h2>Clientes de esta categoría</h2>${list.length?`<div class="cards">${list.map(ccard).join('')}</div>`:`<div class="card empty"><p class="mu">Todavía no hay clientes en la categoría ${CAT}.</p><button class="btn" onclick="edit('clients',0,{cat:'${CAT}'})">Agregar cliente</button></div>`}
+ ${list.length?`<h2>Facturas cargadas</h2>${T2(['Fecha','Cliente','Comprobante','Importe',''],inv.map(i=>[D(i.date),esc(cname(i.cid)),esc(i.num)||'—',M(i.amount),(i.file?`<button class="btn sec sm" onclick="event.stopPropagation();viewF(${i.file})">Ver PDF</button> `:'')+(i.date>CUT?'':'<span class="mu">fuera de los 12 meses</span>'),i.id]),'invoices','No hay facturas cargadas todavía.')}`:''}`}
+function tbl(h,rows,ent,emptyT){if(!rows.length)return`<div class="card empty mu">${emptyT}</div>`;
+ return`<div class="tw"><table><thead><tr>${h.map(x=>`<th>${x}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr class="cl" onclick="edit('${ent}',${r[1]})">${r[0].map(x=>`<td>${x}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`}
+/* tbl recibe [celdas, id]; ajuste de forma */
+const T2=(h,rows,ent,e)=>tbl(h,rows.map(r=>[r.slice(0,-1),r[r.length-1]]),ent,e);
+function clients(){return`<div class="tools"><button class="btn" onclick="edit('clients')">+ Nuevo cliente</button></div>`+T2(['Cliente','CUIT','Categoría','Actividad','Rentas Córdoba'],S.clients.map(c=>[`<b>${esc(c.name)}</b>`,esc(c.cuit)||'—',c.cat,c.act,esc(c.iibb||'—')+' · '+esc(c.reg),c.id]),'clients','Todavía no cargaste clientes.')}
+function pagos(){const rows=[...S.pagos].sort((a,b)=>b.period.localeCompare(a.period)).map(p=>{const k=pstat(pdue(p),p.paid,p.plan);
+ return[esc(cname(p.cid)),MP(p.period),...parts(p).map(M),'<b>'+M(pamt(p))+'</b>',D(pdue(p)),D(p.paid),b(k),k[1]=='Pagado'||k[1]=='En plan'?'':`<button class="btn sm" onclick="event.stopPropagation();pay('pagos',${p.id})">Marcar pagado</button>`,p.id]});
+ return`<p class="mu">En Córdoba el Monotributo es unificado: se paga en un solo acto el Monotributo nacional, Ingresos Brutos de Rentas (importe fijo por categoría) y la tasa municipal. Vence el día 20 de cada mes.</p><div class="tools"><button class="btn" onclick="edit('pagos')">+ Registrar pago</button><button class="btn sec" onclick="genMes()">Generar ${MP(THISM)} para todos</button></div>`+T2(['Cliente','Mes','Monotributo','Rentas (IIBB)','Tasa municipal','Total a pagar','Vence','Pagó el','Estado',''],rows,'pagos','No hay pagos registrados.')}
+function rentas(){const rows=[...S.rentas].sort((a,b)=>b.period.localeCompare(a.period)).map(p=>{const k=pstat(p.due,p.paid,p.plan);
+ return[esc(cname(p.cid)),MP(p.period),M(p.amount),D(p.due),D(p.paid),b(k),k[1]=='Pagado'||k[1]=='En plan'?'':`<button class="btn sm" onclick="event.stopPropagation();pay('rentas',${p.id})">Marcar pagado</button>`,p.id]});
+ return`<p class="mu">Ingresos Brutos en la Dirección General de Rentas de Córdoba. Cargá el importe y el vencimiento que figuran en el portal de Rentas (CiDi) para cada cliente.</p><div class="tools"><button class="btn" onclick="edit('rentas')">+ Registrar Rentas</button></div>`+T2(['Cliente','Período','Importe','Vence','Pagó el','Estado',''],rows,'rentas','No hay pagos de Rentas registrados.')}
+function planes(){const rows=S.planes.map(p=>{const x=plst(p),pc=Math.min(100,(+p.pagas||0)/(+p.cuotas||1)*100);
+ return[`<b>${esc(cname(p.cid))}</b><div class="mu">${esc(p.org)} · ${esc(p.desc)}</div>`,`${p.pagas||0} de ${p.cuotas}<div class="bar" style="margin:5px 0 0;min-width:90px"><i class="inf" style="width:${pc}%"></i></div>`,M(p.cuotaAmt),M(x.saldo),D(x.next),b(x.k),+p.pagas>=+p.cuotas?'':`<button class="btn sm" onclick="event.stopPropagation();cuota(${p.id})">+ Cuota paga</button>`,p.id]});
+ return`<p class="mu">Si un cliente se acoge a un plan de pagos (ARCA o Rentas), cargalo acá y andá sumando las cuotas que va pagando.</p><div class="tools"><button class="btn" onclick="edit('planes')">+ Nuevo plan</button></div>`+T2(['Cliente y deuda','Cuotas','Cada cuota','Saldo','Próximo venc.','Estado',''],rows,'planes','No hay planes de pago.')}
+function cfg(){const inp=(c,i)=>S.scale[c][i]===null?'n/a':`<input type="number" step="any" value="${S.scale[c][i]}" onchange="sc('${c}',${i},this.value)">`;
+ return`<h2 style="margin-top:8px">Escalas del Monotributo</h2><p class="mu">Se actualizan en febrero y agosto. Editá los valores cuando ARCA publique la nueva escala.</p><div class="tw"><table><thead><tr><th>Cat.</th><th>Tope anual</th><th>Cuota servicios</th><th>Cuota bienes</th><th>Rentas (IIBB) fijo</th></tr></thead><tbody>${CATS.map(c=>`<tr><td><b>${c}</b></td><td>${inp(c,0)}</td><td>${inp(c,1)}</td><td>${inp(c,2)}</td><td><input type="number" step="any" value="${S.iibb[c]}" onchange="ib('${c}',this.value)"></td></tr>`).join('')}</tbody></table></div>
+ <h2>Copia de seguridad</h2><div class="card"><p class="mu" style="margin-top:0">Copiá este texto y guardalo en un lugar seguro. Para recuperar tus datos, pegalo abajo.</p><textarea rows="3" readonly onclick="this.select()">${esc(JSON.stringify(S))}</textarea><label>Pegar una copia para restaurar<textarea id="imp" rows="3"></textarea></label><div class="tools" style="margin-top:10px"><button class="btn" onclick="imp()">Restaurar datos</button><button class="btn sec" onclick="demo()">Cargar datos de ejemplo</button><button class="btn del" onclick="reset(this)">Borrar todo</button></div></div>`}
+const VIEWS={home,cats,clients,pagos,planes,docs,cfg};
+/* ---------- formularios ---------- */
+const REG=['Unificado Córdoba','Exento en Rentas (IIBB $0)','Convenio Multilateral (no unificado)'];
+const E={clients:{t:'cliente',d:{cat:'C',act:'Servicios',reg:'Unificado Córdoba'},req:['name'],f:[['name','Nombre o razón social','text'],['cuit','CUIT','text'],['cat','Categoría','sel',CATS],['act','Actividad','sel',['Servicios','Bienes']],['iibb','N° de inscripción en Rentas','text'],['reg','Régimen en Rentas','sel',REG],['muni','Tasa municipal mensual (si corresponde)','num']]},
+ invoices:{t:'factura',d:{date:TODAY},req:['cid','date','amount'],f:[['cid','Cliente','client'],['date','Fecha de la factura','date'],['num','Tipo y número de comprobante','text'],['amount','Importe total (nota de crédito en negativo)','num']]},
+ pagos:{t:'pago de Monotributo',d:{period:THISM},req:['cid','period'],f:[['cid','Cliente','client'],['period','Mes que se paga','month'],['amount','Importe real (vacío = cuota de la escala)','num'],['paid','Fecha de pago (vacío si todavía no pagó)','date'],['plan','Está incluido en un plan de pagos','chk']]},
+ rentas:{t:'pago de Rentas',d:{period:THISM},req:['cid','period','amount'],f:[['cid','Cliente','client'],['period','Período','month'],['amount','Importe a pagar','num'],['due','Fecha de vencimiento','date'],['paid','Fecha de pago (vacío si todavía no pagó)','date'],['plan','Está incluido en un plan de pagos','chk']]},
+ planes:{t:'plan de pagos',d:{org:'ARCA',pagas:0},req:['cid','total','cuotas','cuotaAmt'],f:[['cid','Cliente','client'],['org','Organismo','sel',['ARCA','Rentas Córdoba','Otro']],['desc','Deuda incluida (ej: Monotributo 03 a 06/2026)','text'],['total','Deuda total del plan','num'],['cuotas','Cantidad de cuotas','num'],['cuotaAmt','Importe de cada cuota','num'],['pagas','Cuotas ya pagas','num'],['first','Vencimiento de la 1ª cuota','date']]}};
+function fld([k,l,t,o],v,req){const r=req?'required':'';
+ if(t=='client')return`<label>${l}<select name="${k}" required>${S.clients.map(c=>`<option value="${c.id}" ${c.id==v?'selected':''}>${esc(c.name)}</option>`).join('')}</select></label>`;
+ if(t=='sel')return`<label>${l}<select name="${k}">${o.map(x=>`<option ${x==v?'selected':''}>${x}</option>`).join('')}</select></label>`;
+ if(t=='chk')return`<label class="chk"><input type="checkbox" name="${k}" ${v?'checked':''}> ${l}</label>`;
+ return`<label>${l}<input name="${k}" type="${t=='num'?'number':t}" ${t=='num'?'step="any"':''} value="${esc(v)}" ${r}></label>`}
+function edit(ent,id=0,pre={}){const e=E[ent];if(ent!='clients'&&!S.clients.length){msg('Primero cargá un cliente');return go('clients')}
+ const r=id?S[ent].find(x=>x.id==id):{...e.d,...pre};if(ent!='clients'&&!r.cid)r.cid=S.clients[0].id;
+ document.getElementById('modal').innerHTML=`<div class="ov"><form class="md" onsubmit="return saveF(event,'${ent}',${id})"><h2 style="margin:0">${id?'Editar':'Nuevo'} ${e.t}</h2>${e.f.map(f=>fld(f,r[f[0]],e.req.includes(f[0]))).join('')}<div class="tools" style="margin-top:16px"><button class="btn">Guardar</button><button type="button" class="btn sec" onclick="closeM()">Cancelar</button>${id&&r.file?`<button type="button" class="btn sec" onclick="viewF(${r.file})">Ver PDF</button>`:''}${id?`<button type="button" class="btn del" onclick="del('${ent}',${id},this)">Eliminar</button>`:''}</div></form></div>`}
+const closeM=()=>document.getElementById('modal').innerHTML='';
+function saveF(ev,ent,id){ev.preventDefault();const fd=new FormData(ev.target),o={};
+ E[ent].f.forEach(([k,,t])=>{const v=fd.get(k);o[k]=t=='chk'?fd.has(k):t=='num'?(v===''?'':+v):t=='client'?+v:v});
+ if(id)Object.assign(S[ent].find(x=>x.id==id),o);else S[ent].push({id:uid(),...o});
+ save();closeM();render();msg('Guardado');return false}
+function del(ent,id,btn){if(!btn.dataset.s){btn.dataset.s=1;btn.textContent='¿Seguro? Tocá de nuevo';return}
+ S.invoices.filter(i=>i.file&&(ent=='invoices'?i.id==id:ent=='clients'&&i.cid==id)).forEach(i=>fdel(i.file));S[ent]=S[ent].filter(x=>x.id!=id);if(ent=='clients')['invoices','pagos','rentas','planes'].forEach(k=>S[k]=S[k].filter(x=>x.cid!=id));
+ save();closeM();render();msg('Eliminado')}
+function pay(ent,id){S[ent].find(x=>x.id==id).paid=TODAY;save();render();msg('Marcado como pagado hoy')}
+function cuota(id){const p=S.planes.find(x=>x.id==id);p.pagas=(+p.pagas||0)+1;save();render();msg('Cuota sumada')}
+function genMes(){let n=0;S.clients.forEach(c=>{if(!S.pagos.some(x=>x.cid==c.id&&x.period==THISM)){S.pagos.push({id:uid(),cid:c.id,period:THISM,amount:'',paid:'',plan:false});n++}});if(!S.clients.length)return msg('Primero cargá un cliente');save();render();msg(n?`Se agregaron ${n} pagos`:'Ya estaban todos cargados')}
+function sc(c,i,v){S.scale[c][i]=+v;save();msg('Escala actualizada')}
+function imp(){try{const o=JSON.parse(document.getElementById('imp').value);if(!o.clients)throw 0;localStorage.setItem(KEY,JSON.stringify(o));S=load();render();msg('Datos restaurados')}catch(e){msg('El texto pegado no es una copia válida')}}
+function reset(btn){if(!btn.dataset.s){btn.dataset.s=1;btn.textContent='¿Seguro? Tocá de nuevo';return}S=load.call(0,localStorage.removeItem(KEY));save();render();msg('Datos borrados')}
+function demo(){const ago=n=>iso(new Date(NOW.getFullYear(),NOW.getMonth()-n,12));const mo=n=>ago(n).slice(0,7);
+ S=load.call(0,localStorage.removeItem(KEY));
+ const C=[['Juan Pérez','20-12345678-9','C','Servicios'],['Lucía Gómez','27-23456789-4','A','Servicios'],['Taller Rossi','20-34567890-1','F','Bienes'],['Marcos Díaz','20-45678901-6','B','Servicios']];
+ C.forEach(c=>S.clients.push({id:uid(),name:c[0],cuit:c[1],cat:c[2],act:c[3],iibb:'280'+Math.floor(100000+Math.random()*899999),reg:'Unificado Córdoba'}));
+ const inv=(i,list)=>list.forEach(([a,m],k)=>S.invoices.push({id:uid(),cid:S.clients[i].id,date:ago(m),num:'FC C 00001-0000'+(100+k+i*10),amount:a}));
+ inv(0,[[8000000,9],[7500000,5],[6000000,1]]);inv(1,[[5000000,10],[4000000,6],[3500000,2]]);inv(2,[[9000000,8],[8000000,4],[7000000,0]]);inv(3,[[2000000,7],[1800000,3],[1500000,0]]);
+ S.clients.forEach((c,i)=>{S.pagos.push({id:uid(),cid:c.id,period:mo(1),amount:'',paid:ago(1).slice(0,8)+'18',plan:false});S.pagos.push({id:uid(),cid:c.id,period:THISM,amount:'',paid:'',plan:false})});
+ S.pagos.push({id:uid(),cid:S.clients[3].id,period:mo(2),amount:'',paid:'',plan:false});
+ S.rentas.push({id:uid(),cid:S.clients[0].id,period:mo(1),amount:64750,due:ago(0).slice(0,8)+'01',paid:'',plan:false});
+ S.planes.push({id:uid(),cid:S.clients[3].id,org:'ARCA',desc:'Monotributo adeudado',total:310000,cuotas:6,cuotaAmt:58000,pagas:2,first:ago(3).slice(0,8)+'16'});
+ save();V='home';render();msg('Datos de ejemplo cargados. Podés borrarlos en Ajustes.')}
+/* ---------- informes ---------- */
+function rep(ids){const cs=ids.map(cl).filter(Boolean);if(!cs.length)return null;const one=cs.length==1,secs=[];
+ if(one){const c=cs[0],s=st(c);
+  secs.push({h:'Datos del cliente',rows:[['Cliente',c.name],['CUIT',c.cuit||'—'],['Categoría',c.cat+' · '+c.act],['Rentas Córdoba',(c.reg||'')+(c.iibb?' · Insc. '+c.iibb:'')]]});
+  secs.push({h:'Tope de facturación (últimos 12 meses)',rows:[['Facturado',M(s.f)],['Tope anual',M(s.t)],['Usado',Math.round(s.p*100)+'%'],['Disponible',M(s.left)],['Estado',s.k[1]]]});
+  secs.push({h:'Facturas emitidas',head:['Fecha','Comprobante','Importe'],rows:S.invoices.filter(i=>i.cid==c.id&&i.date>CUT&&i.date<=TODAY).sort((a,b)=>b.date.localeCompare(a.date)).map(i=>[D(i.date),i.num||'—',M(i.amount)])});
+  secs.push({h:'Pagos mensuales (Monotributo Unificado Córdoba)',head:['Mes','Monotributo','Rentas','Municipal','Total','Estado'],rows:S.pagos.filter(p=>p.cid==c.id).sort((a,b)=>b.period.localeCompare(a.period)).map(p=>[MP(p.period),...parts(p).map(M),M(pamt(p)),pstat(pdue(p),p.paid,p.plan)[1]])});
+  secs.push({h:'Planes de pago',head:['Organismo','Deuda','Cuotas','Saldo','Estado'],rows:S.planes.filter(p=>p.cid==c.id).map(p=>{const x=plst(p);return[p.org,M(p.total),(p.pagas||0)+' de '+p.cuotas,M(x.saldo),x.k[1]]})});
+ }else secs.push({h:'Resumen de clientes',head:['Cliente','Cat.','Facturado 12 m','Tope','Usado','Estado','Deuda vencida'],rows:cs.map(c=>{const s=st(c),dv=S.pagos.filter(p=>p.cid==c.id&&pstat(pdue(p),p.paid,p.plan)[1]=='Vencido').reduce((a,p)=>a+pamt(p),0);return[c.name,c.cat,M(s.f),M(s.t),Math.round(s.p*100)+'%',s.k[1],M(dv)]})});
+ secs.forEach(s=>{if(!s.rows.length){s.head=null;s.rows=[['Sin registros']]}});
+ return{title:one?'Informe de '+cs[0].name:'Informe general de clientes',sub:'Control de Monotributo – Córdoba · Emitido el '+D(TODAY),secs,label:one?cs[0].name:'Todos los clientes',names:cs.map(c=>c.name)}}
+function mkPdf(r){const d=new jspdf.jsPDF();d.setFontSize(16);d.text(r.title,14,18);d.setFontSize(10);d.setTextColor(100);d.text(r.sub,14,25);d.setTextColor(0);let y=34;
+ r.secs.forEach(s=>{if(y>245){d.addPage();y=18}d.setFontSize(12);d.text(s.h,14,y);
+  d.autoTable({startY:y+3,head:s.head?[s.head]:undefined,body:s.rows,styles:{fontSize:9},headStyles:{fillColor:[31,79,209]},theme:'grid'});y=d.lastAutoTable.finalY+11});
+ return d.output('arraybuffer')}
+function mkDocx(r){const x=s=>String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+ const p=(t,o={})=>`<w:p><w:r><w:rPr>${o.b?'<w:b/>':''}${o.sz?`<w:sz w:val="${o.sz}"/>`:''}</w:rPr><w:t xml:space="preserve">${x(t)}</w:t></w:r></w:p>`;
+ const tc=(t,b)=>`<w:tc><w:tcPr><w:tcW w:w="0" w:type="auto"/></w:tcPr>${p(t,{b})}</w:tc>`;
+ const tb=s=>{const n=(s.head||s.rows[0]).length;return`<w:tbl><w:tblPr><w:tblW w:w="5000" w:type="pct"/><w:tblBorders>${['top','left','bottom','right','insideH','insideV'].map(k=>`<w:${k} w:val="single" w:sz="4" w:color="BBBBBB"/>`).join('')}</w:tblBorders></w:tblPr><w:tblGrid>${'<w:gridCol w:w="1800"/>'.repeat(n)}</w:tblGrid>${s.head?`<w:tr>${s.head.map(h=>tc(h,1)).join('')}</w:tr>`:''}${s.rows.map(q=>`<w:tr>${q.map(c=>tc(c)).join('')}</w:tr>`).join('')}</w:tbl>`};
+ const body=p(r.title,{b:1,sz:32})+p(r.sub)+r.secs.map(s=>p(s.h,{b:1,sz:26})+tb(s)+p('')).join('');
+ const z=new JSZip();z.file('[Content_Types].xml','<?xml version="1.0" encoding="UTF-8"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>');
+ z.file('_rels/.rels','<?xml version="1.0" encoding="UTF-8"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>');
+ z.file('word/document.xml','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body>'+body+'</w:body></w:document>');
+ return z.generateAsync({type:'blob'})}
+async function dl(name,data){try{const c=window.claude&&await claude.use('downloads');if(!c){const a=document.createElement('a');a.href=URL.createObjectURL(data instanceof Blob?data:new Blob([data]));a.download=name;document.body.appendChild(a);a.click();a.remove();return msg('Archivo listo: '+name)}await c.save({filename:name,data});msg('Archivo listo: '+name)}catch(e){msg(e&&e.code=='declined'?'Descarga cancelada':'No se pudo descargar el archivo')}}
+function saveDoc(r,fn,buf){let bin='';const u=new Uint8Array(buf);for(let i=0;i<u.length;i+=8192)bin+=String.fromCharCode.apply(null,u.subarray(i,i+8192));
+ S.docs.unshift({id:uid(),date:new Date().toISOString(),fn:fn+'.pdf',names:r.names,b64:btoa(bin)});
+ if(DB)DB.doc('inf_'+S.docs[0].id).set(S.docs[0]).catch(()=>{});
+ try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){S.docs.shift();msg('No hay espacio para guardar este PDF en el panel')}}
+async function exp(ids,type){const r=rep(ids);if(!r)return msg('Primero cargá un cliente');
+ const fn='Informe_'+r.label.normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^\w-]+/g,'_')+'_'+TODAY;
+ try{if(type=='pdf'){if(!window.jspdf)return msg('No se pudo cargar el generador de PDF');const buf=mkPdf(r);saveDoc(r,fn,buf);await dl(fn+'.pdf',new Blob([buf],{type:'application/pdf'}))}
+ else{if(!window.JSZip)return msg('No se pudo cargar el generador de Word');await dl(fn+'.docx',await mkDocx(r))}}catch(e){msg('No se pudo generar el archivo')}}
+function docs(){const rows=S.docs.map(d=>`<tr><td>${new Date(d.date).toLocaleString('es-AR',{dateStyle:'short',timeStyle:'short'})}</td><td><b>${esc(d.names.length>3?d.names.slice(0,3).join(', ')+' y '+(d.names.length-3)+' más':d.names.join(', '))}</b><div class="mu">${esc(d.fn)}</div></td><td style="white-space:nowrap"><button class="btn sm" onclick="redl(${d.id})">Descargar</button> <button class="btn del sm" onclick="rmDoc(${d.id},this)">Eliminar</button></td></tr>`).join('');
+ return`<p class="mu">Cada PDF que exportás se guarda acá con su fecha y los clientes incluidos, para volver a descargarlo cuando quieras.</p>`+(rows?`<div class="tw"><table><thead><tr><th>Fecha</th><th>Clientes</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`:'<div class="card empty mu">Todavía no exportaste ningún PDF. Usá el botón PDF en cualquier cliente o el informe general en Inicio.</div>')}
+function redl(id){const d=S.docs.find(x=>x.id==id),bin=atob(d.b64),u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);dl(d.fn,new Blob([u],{type:'application/pdf'}))}
+function rmDoc(id,btn){if(!btn.dataset.s){btn.dataset.s=1;btn.textContent='¿Seguro?';return}S.docs=S.docs.filter(x=>x.id!=id);if(DB)DB.doc('inf_'+id).delete().catch(()=>{});save();render();msg('Informe eliminado')}
+function ib(c,v){S.iibb[c]=+v;save();msg('Escala actualizada')}
+/* ---------- facturas PDF: lectura, carpeta y vista ---------- */
+let Q=[],RV=null,UPCID=0,PL;
+const dg=s=>String(s||'').replace(/\D/g,'');
+const idb=()=>new Promise((ok,no)=>{const r=indexedDB.open('monocba',1);r.onupgradeneeded=()=>r.result.createObjectStore('f',{keyPath:'id'});r.onsuccess=()=>ok(r.result);r.onerror=()=>no(r.error)});
+const fput=async o=>{const d=await idb();return new Promise((ok,no)=>{const t=d.transaction('f','readwrite');t.objectStore('f').put(o);t.oncomplete=ok;t.onerror=()=>no(t.error)})};
+const fget=async id=>{const d=await idb();return new Promise((ok,no)=>{const q=d.transaction('f').objectStore('f').get(id);q.onsuccess=()=>ok(q.result);q.onerror=()=>no(q.error)})};
+const fdel=async id=>{const i=S.invoices.find(x=>x.file==id),ai=i&&i.aid;if(ai&&window.claude)try{const A=await claude.use('assets');if(A)A.delete(ai)}catch(e){}try{const d=await idb();return new Promise(ok=>{const t=d.transaction('f','readwrite');t.objectStore('f').delete(id);t.oncomplete=ok;t.onerror=ok})}catch(e){}};
+function loadPdf(){if(window.pdfjsLib)return Promise.resolve();const B='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/',ld=u=>new Promise((a,b)=>{const s=document.createElement('script');s.src=u;s.onload=a;s.onerror=b;document.head.appendChild(s)});
+ return PL=PL||ld(B+'pdf.worker.min.js').then(()=>{if(!globalThis.pdfjsWorker&&globalThis['pdfjs-dist/build/pdf.worker'])globalThis.pdfjsWorker=globalThis['pdfjs-dist/build/pdf.worker']}).then(()=>ld(B+'pdf.min.js')).then(()=>{pdfjsLib.GlobalWorkerOptions.workerSrc=B+'pdf.worker.min.js'}).catch(e=>{PL=null;throw e})}
+const openPdf=async buf=>{await loadPdf();return pdfjsLib.getDocument({data:new Uint8Array(buf.slice(0))}).promise};
+async function drawPdf(pdf,box,max,scale){for(let i=1;i<=Math.min(pdf.numPages,max);i++){const p=await pdf.getPage(i),v=p.getViewport({scale}),c=document.createElement('canvas');c.width=v.width;c.height=v.height;box.appendChild(c);await p.render({canvasContext:c.getContext('2d'),viewport:v}).promise}}
+const CODES={1:'FC A',2:'ND A',3:'NC A',6:'FC B',7:'ND B',8:'NC B',11:'FC C',12:'ND C',13:'NC C'};
+function pn(s){s=s.replace(/[^\d.,]/g,'');if(s.includes(','))s=s.replace(/\./g,'').replace(',','.');else if(!/^\d+\.\d{2}$/.test(s))s=s.replace(/\./g,'');return parseFloat(s)}
+function parseInv(t){const o={};let m;
+ if(m=t.match(/Fecha de Emisi[oó]n:?\s*(\d{2})\/(\d{2})\/(\d{4})/i))o.date=`${m[3]}-${m[2]}-${m[1]}`;
+ const pv=t.match(/Punto de Venta:?\s*(\d{1,5})/i),nr=t.match(/Comp\.?\s*Nro:?\s*(\d{1,8})/i),cd=t.match(/COD\.?\s*0*(\d{1,3})\b/i),lb=cd?CODES[+cd[1]]||'':'';
+ o.nc=/^NC/.test(lb)||/NOTA DE CR[EÉ]DITO/i.test(t);
+ if(pv&&nr)o.num=(lb?lb+' ':'')+pv[1].padStart(5,'0')+'-'+nr[1].padStart(8,'0');
+ if(m=t.match(/Importe Total:?\s*\$?\s*([\d.,]+)/i)){const a=pn(m[1]);if(!isNaN(a))o.amount=o.nc&&a>0?-a:a}
+ o.cuits=[...new Set((t.match(/\b\d{2}-?\d{8}-?\d\b/g)||[]).map(dg))];return o}
+function up(cid){if(!S.clients.length){msg('Primero cargá un cliente');return go('clients')}UPCID=cid;document.getElementById('fi').click()}
+function onFiles(fl){Q.push(...[...fl].filter(f=>f.type=='application/pdf'||/\.pdf$/i.test(f.name)));document.getElementById('fi').value='';if(!RV&&Q.length)next()}
+async function next(){RV=null;if(!Q.length){closeM();render();return}const f=Q.shift();msg('Leyendo '+f.name+'…');
+ const buf=await f.arrayBuffer();let pdf=null,o={};
+ try{pdf=await openPdf(buf);let t='';for(let i=1;i<=Math.min(pdf.numPages,2);i++){const c=await(await pdf.getPage(i)).getTextContent();t+=c.items.map(x=>x.str).join(' ')+' '}o=parseInv(t.replace(/\s+/g,' '))}catch(e){}
+ RV={f,buf,pdf,o};showRV()}
+function showRV(){const{f,o,pdf}=RV;let cid=UPCID;if(!cid){const h=S.clients.find(c=>dg(c.cuit)&&(o.cuits||[]).includes(dg(c.cuit)));cid=h?h.id:S.clients[0].id}
+ const ok=o.date||o.num||o.amount!=null;
+ document.getElementById('modal').innerHTML=`<div class="ov"><form class="md wide" oninput="rvChk()" onsubmit="rvSave(event);return false"><h2 style="margin:0">Nueva factura${Q.length?` <span class="mu">(faltan ${Q.length} más)</span>`:''}</h2><div class="mu">${esc(f.name)}</div><div class="pv" id="pvb">${pdf?'':'<p class="mu" style="padding:12px;color:#444">No se pudo mostrar la vista previa, pero el archivo se guarda igual.</p>'}</div><div class="mu" style="color:${ok?'var(--ok)':'var(--bad)'}">${ok?'Datos leídos de la factura. Revisalos antes de guardar.':'No pude leer los datos automáticamente: completalos a mano.'}</div><div id="rvw" style="color:var(--bad);font-size:13px"></div>${fld(['cid','Cliente','client'],cid,1)}${fld(['date','Fecha de la factura','date'],o.date||TODAY,1)}${fld(['num','Tipo y número de comprobante','text'],o.num||'',0)}${fld(['amount','Importe total (nota de crédito en negativo)','num'],o.amount??'',1)}<div class="tools" style="margin-top:16px"><button class="btn">Guardar factura</button><button type="button" class="btn sec" onclick="next()">Omitir</button><button type="button" class="btn sec" onclick="Q=[];RV=null;closeM();render()">Cancelar</button></div></form></div>`;
+ rvChk();if(pdf)drawPdf(pdf,document.getElementById('pvb'),1,1.4).catch(()=>{})}
+function rvChk(){const s=document.querySelector('#modal select[name=cid]'),w=document.getElementById('rvw');if(!s||!w)return;const c=cl(s.value),cu=RV.o.cuits||[];
+ w.textContent=cu.length&&c&&dg(c.cuit)&&!cu.includes(dg(c.cuit))?'Atención: el CUIT de esta factura no coincide con el de '+c.name+'.':''}
+async function rvSave(ev){const fd=new FormData(ev.target),cid=+fd.get('cid'),num=(fd.get('num')||'').trim();
+ if(num&&S.invoices.some(i=>i.cid==cid&&i.num==num)){msg('Esa factura ya está cargada para este cliente');return}
+ const inv={id:uid(),cid,date:fd.get('date'),num,amount:+fd.get('amount')};
+ try{const fid=uid();await fput({id:fid,name:RV.f.name,data:RV.buf});inv.file=fid;inv.fname=RV.f.name;try{const A=window.claude&&await claude.use('assets');if(A){const u=await A.upload(new Blob([RV.buf],{type:'application/pdf'}));inv.aid=u.id}}catch(e){}}catch(e){msg('No se pudo guardar el PDF, pero la factura se cargó')}
+ S.invoices.push(inv);save();UPCID=UPCID||0;next()}
+async function getF(fid){let r=null;try{r=await fget(fid)}catch(e){}if(r)return r;const i=S.invoices.find(x=>x.file==fid);if(!i||!i.aid)return null;const b=await(await fetch('/_blob/'+i.aid)).arrayBuffer();r={id:fid,name:i.fname||'factura.pdf',data:b};try{await fput(r)}catch(e){}return r}
+async function viewF(fid){try{const r=await getF(fid);if(!r)return msg('No encuentro el archivo');
+ document.getElementById('modal').innerHTML=`<div class="ov"><div class="md wide"><div class="row"><b>${esc(r.name)}</b><span class="tools" style="margin:0"><button class="btn sm" onclick="dlF(${fid})">Descargar</button><button class="btn sec sm" onclick="closeM()">Cerrar</button></span></div><div class="pv" id="pgs" style="max-height:72vh"></div></div></div>`;
+ try{await drawPdf(await openPdf(r.data),document.getElementById('pgs'),5,1.4)}catch(e){document.getElementById('pgs').innerHTML='<p class="mu" style="padding:12px;color:#444">No se pudo mostrar la vista previa. Usá Descargar.</p>'}}catch(e){msg('No se pudo abrir el PDF')}}
+async function dlF(fid){try{const r=await getF(fid);dl(r.name,new Blob([r.data],{type:'application/pdf'}))}catch(e){msg('No se pudo descargar')}}
+function rmF(id,btn){if(!btn.dataset.s){btn.dataset.s=1;btn.textContent='¿Seguro?';return}const i=S.invoices.find(x=>x.file==id);fdel(id);if(i){delete i.file;delete i.fname;delete i.aid}save();render();msg('PDF quitado de la carpeta')}
+function folder(){const cs=S.clients.filter(c=>S.invoices.some(i=>i.cid==c.id&&i.file));
+ return`<p class="mu">Acá quedan guardadas las facturas originales (PDF) de cada cliente. Los datos se leen solos y se suman al control del tope.</p><div class="tools"><button class="btn" onclick="up(0)">+ Subir facturas PDF</button></div>`+(cs.length?cs.map(c=>{const l=S.invoices.filter(i=>i.cid==c.id&&i.file).sort((a,b)=>b.date.localeCompare(a.date));
+ return`<details class="card" style="margin-bottom:10px" open><summary><b>📁 ${esc(c.name)}</b> <span class="mu">· ${l.length} archivo${l.length==1?'':'s'}</span></summary><div class="tw" style="margin-top:10px"><table><thead><tr><th>Fecha</th><th>Comprobante</th><th>Importe</th><th>Archivo</th><th></th></tr></thead><tbody>${l.map(i=>`<tr><td>${D(i.date)}</td><td>${esc(i.num||'—')}</td><td>${M(i.amount)}</td><td class="mu">${esc(i.fname||'')}</td><td style="white-space:nowrap"><button class="btn sm" onclick="viewF(${i.file})">Ver</button> <button class="btn sec sm" onclick="dlF(${i.file})">Descargar</button> <button class="btn del sm" onclick="rmF(${i.file},this)">Quitar PDF</button></td></tr>`).join('')}</tbody></table></div></details>`}).join(''):'<div class="card empty mu">Todavía no subiste facturas en PDF. Tocá “Subir facturas PDF” o usá el botón dentro de cada cliente.</div>')}
+VIEWS.folder=folder;
+/* ---------- nube: sincronización entre dispositivos ---------- */
+let CAND=null,CM={};
+const syncMsg=t=>{const e=document.getElementById('sync');if(e)e.textContent=t};
+async function push(force){try{for(const k of PARTS){const j=JSON.stringify(S[k]);if(force||LAST[k]!==j){await DB.doc(k).set({v:S[k]});LAST[k]=j}}
+ const j=JSON.stringify([S.scale,S.iibb,S.seq]);if(force||LAST.m!==j){await DB.doc('m').set({scale:S.scale,iibb:S.iibb,seq:S.seq});LAST.m=j}
+ if(force)for(const d of S.docs)await DB.doc('inf_'+d.id).set(d);
+ syncMsg('☁ Sincronizado '+new Date().toLocaleTimeString('es-AR',{timeStyle:'short'}))}catch(e){syncMsg('Sin conexión con la nube: se guardó en este dispositivo')}}
+function applyCloud(m){S.scale=m.m.scale||S.scale;S.iibb=m.m.iibb||S.iibb;S.seq=Math.max(m.m.seq||1,S.seq);PARTS.forEach(k=>{S[k]=(m[k]&&m[k].v)||[];LAST[k]=JSON.stringify(S[k])});
+ LAST.m=JSON.stringify([S.scale,S.iibb,S.seq]);S.docs=Object.keys(m).filter(k=>k.startsWith('inf_')).map(k=>m[k]).sort((a,b)=>b.date.localeCompare(a.date));
+ try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}render()}
+const fin=()=>{DB=CAND;try{localStorage.setItem('mono_synced','1')}catch(e){}closeM()};
+function pick(){document.getElementById('modal').innerHTML='<div class="ov"><div class="md"><h2 style="margin:0">Hay datos distintos en este dispositivo</h2><p>Ya tenés datos guardados en tu nube y también en este dispositivo. ¿Cuáles querés conservar?</p><div class="tools"><button class="btn" onclick="useCloud()">Usar los de la nube</button><button class="btn sec" onclick="useLocal()">Usar los de este dispositivo</button></div></div></div>'}
+function useCloud(){applyCloud(CM);fin();syncMsg('☁ Datos de la nube cargados')}
+async function useLocal(){fin();await push(true)}
+(async()=>{if(!window.claude){syncMsg('Datos solo en este dispositivo');return}
+ try{const[d,u]=await Promise.all([claude.use('db'),claude.use('user')]);const id=u&&await u.id();if(!d||!id){syncMsg('Datos solo en este dispositivo (abrí la app desde tu cuenta de Claude para sincronizar)');return}
+  CAND=d.collection('data/users/'+id);const snap=await CAND.get();snap.docs.forEach(x=>CM[x.id]=x.data());
+  const cloud=CM.m&&((CM.clients&&CM.clients.v||[]).length>0||(CM.invoices&&CM.invoices.v||[]).length>0);
+  if(!cloud){fin();await push(true)}else if(S.clients.length&&!localStorage.getItem('mono_synced'))pick();else{applyCloud(CM);fin();syncMsg('☁ Sincronizado')}
+ }catch(e){syncMsg('No se pudo conectar con la nube: se usan los datos de este dispositivo')}})();
+render();
+</script></body></html>
+
+
+
